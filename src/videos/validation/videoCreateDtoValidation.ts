@@ -2,7 +2,7 @@ import { VideoCreateDto } from "../dto/video.create-dto";
 import { FieldError } from "../../core/types/error.types";
 import { Resolutions } from "../types/video";
 
-export function validateVideoCreateDto(data: VideoCreateDto): FieldError[] {
+export function videoCreateDtoValidation(data: VideoCreateDto): FieldError[] {
   const errors: FieldError[] = [];
 
   if (

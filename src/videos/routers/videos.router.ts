@@ -4,8 +4,9 @@ import { HttpStatus } from "../../core/types/http-statuses";
 import { VideoCreateDto } from "../dto/video.create-dto";
 import { Video, Resolutions } from "../types/video";
 import { addDaysToDate } from "../../core/utils/helpers";
-import { validateVideoCreateDto } from "../validation/videoCreateDtoValidation";
+import { videoCreateDtoValidation } from "../validation/videoCreateDtoValidation";
 import { createErrorMessages } from "../../core/utils/error.utils";
+import { videoUpdateDtoValidation } from "../validation/videoUpdateDtoValidation";
 
 const videosRouter = Router({});
 
@@ -26,7 +27,7 @@ videosRouter
   })
   .post("/", (req: Request<{}, {}, VideoCreateDto>, res: Response) => {
     // 1.validate input
-    const errors = validateVideoCreateDto({
+    const errors = videoCreateDtoValidation({
       title: req.body.title,
       author: req.body.author,
       availableResolutions: req.body.availableResolutions,
@@ -65,7 +66,20 @@ videosRouter
       return;
     }
     // 2.validate
+    const errors = videoUpdateDtoValidation({
+      title: req.body.title,
+      author: req.body.author,
+      availableResolutions: req.body.availableResolutions,
+      canBeDownloaded: req.body.canBeDownloaded,
+      minAgeRestriction: req.body.minAgeRestriction,
+      publicationDate: req.body.publicationDate,
+    });
+
     // 3.if any errors - send errors - return
+    if (errors.length > 0) {
+      res.status(HttpStatus.BadRequest).send(createErrorMessages(errors));
+      return;
+    }
     // 4.find video
     const videoToUpdate = db.videos[index];
     // 5.update fields
