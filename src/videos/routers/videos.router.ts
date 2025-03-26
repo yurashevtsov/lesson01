@@ -42,20 +42,43 @@ videosRouter
     res.status(HttpStatus.Created).send(newVideo);
   })
   .put("/:videoId", (req: Request, res: Response) => {
-    // 0.find video -
-    // 1.no video -> sendStatus(404)
+    // 0.find video
+    const id = Number.parseInt(req.params.videoId);
+    const index = db.videos.findIndex((video) => video.id === id);
+
+    // 1.check if video exists
+    if (index === -1) {
+      res.sendStatus(HttpStatus.NotFound);
+      return;
+    }
     // 2.validate
     // 3.if any errors - send errors - return
-    // 4.update found video
-    // 5.send sendStatus(204)
-    res.status(HttpStatus.InternalServerError).send("Not implemented yet");
+    // 4.find video
+    const videoToUpdate = db.videos[index];
+    // 5.update fields
+    videoToUpdate.title = req.body.title;
+    videoToUpdate.author = req.body.author;
+    videoToUpdate.availableResolutions = req.body.availableResolutions;
+    videoToUpdate.canBeDownloaded = req.body.canBeDownloaded;
+    videoToUpdate.minAgeRestriction = req.body.minAgeRestriction;
+    videoToUpdate.publicationDate = req.body.publicationDate;
+
+    // 6.send sendStatus(204)
+    res.sendStatus(HttpStatus.NoContent);
   })
   .delete("/:videoId", (req: Request, res: Response) => {
-    //   find video by id
-    //   no video -> 404
-    //   find index or filter all results to include all that has different id
-    //   send 204
-    res.status(HttpStatus.InternalServerError).send("Not implemented yet");
+    //  1. find video by id
+    const id = Number.parseInt(req.params.videoId);
+    const index = db.videos.findIndex((video) => video.id === id);
+    //  2. no video -> 404
+    if (index === -1) {
+      res.sendStatus(HttpStatus.NotFound);
+      return;
+    }
+    // 3. delete video from db by its index
+    db.videos.splice(index, 1);
+    // 4. send 204
+    res.sendStatus(HttpStatus.NoContent);
   });
 
 export { videosRouter };
