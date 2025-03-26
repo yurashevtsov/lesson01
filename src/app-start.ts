@@ -4,7 +4,7 @@ import { testingRouter } from "./testing/routers/testing.router";
 
 export function startApp(app: Express): Express {
   app.use(express.json());
-  app.use("/api/videos", videosRouter); // /homework_01/api/videos
-  app.use("/api/testing", testingRouter); // /homework_01/api/testing
+  app.use("/videos", videosRouter); // /homework_01/api/videos
+  app.use("/testing", testingRouter); // /homework_01/api/testing
   return app;
 }
