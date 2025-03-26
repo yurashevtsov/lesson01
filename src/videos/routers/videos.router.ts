@@ -4,6 +4,8 @@ import { HttpStatus } from "../../core/types/http-statuses";
 import { VideoCreateDto } from "../dto/video.create-dto";
 import { Video, Resolutions } from "../types/video";
 import { addDaysToDate } from "../../core/utils/helpers";
+import { validateVideoCreateDto } from "../validation/videoCreateDtoValidation";
+import { createErrorMessages } from "../../core/utils/error.utils";
 
 const videosRouter = Router({});
 
@@ -23,7 +25,18 @@ videosRouter
     res.status(HttpStatus.Ok).send(foundVideo);
   })
   .post("/", (req: Request<{}, {}, VideoCreateDto>, res: Response) => {
-    // 1.validate
+    // 1.validate input
+    const errors = validateVideoCreateDto({
+      title: req.body.title,
+      author: req.body.author,
+      availableResolutions: req.body.availableResolutions,
+    });
+
+    if (errors.length > 0) {
+      res.status(HttpStatus.BadRequest).send(createErrorMessages(errors));
+      return;
+    }
+
     // 2.if any errors - send errors - return
     // 3.create new video
     const newVideo: Video = {
